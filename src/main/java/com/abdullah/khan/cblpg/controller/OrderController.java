@@ -20,6 +20,8 @@ import com.abdullah.khan.cblpg.model.Tkkpg;
 import com.abdullah.khan.cblpg.service.OrderService;
 import com.abdullah.khan.cblpg.service.RequestService;
 import com.abdullah.khan.cblpg.service.ResponseService;
+import com.abdullah.khan.cblpg.service.impl.RequestApplicationTypeTextByXml;
+import com.abdullah.khan.cblpg.util.ContentTypeContext;
 import com.abdullah.khan.cblpg.util.XmlUtil;
 
 //https://stackoverflow.com/questions/17955777/redirect-to-an-external-url-from-controller-action-in-spring-mvc
@@ -32,12 +34,18 @@ public class OrderController {
 
 	@Autowired
 	RequestService requestService;
+	
+	@Autowired
+	RequestApplicationTypeTextByXml requestApplicationTypeTextByXml;
 
 	@Autowired
 	ResponseService responseService;
 
 	@Autowired
 	XmlUtil xmlUtil;
+	
+	@Autowired
+	ContentTypeContext contentTypeContext;
 
 	// http://localhost:8080/orders
 	@GetMapping("/orders")
@@ -62,13 +70,15 @@ public class OrderController {
 	// http://localhost:8080/orders
 	@PostMapping("/orders")
 	public ResponseEntity<String> addOrder(@RequestBody Tkkpg tkkpg) throws Exception {
-		Tkkpg req = tkkpg;
-		System.out.println("Tkkpg : " + req.toString());
-
 		Order order = tkkpg.getRequest().getOrder();
-
 		String objectToXml = xmlUtil.convertObjectToXml(tkkpg);
+				
+		//contentTypeContext.setRequestService(requestApplicationTypeTextByXml);
+		//contentTypeContext.setRequestService(new RequestApplicationTypeUrlEncoded());
+		//String xmlResponse = contentTypeContext.sendXmlRequest(objectToXml);
+		
 		String xmlResponse = requestService.sendXmlRequest(objectToXml);
+		
 		String filterXmlResponse = responseService.filterXmlResponse(xmlResponse);
 		Response response = xmlUtil.convertXmlToTkkpgObject(filterXmlResponse);
 
@@ -77,16 +87,17 @@ public class OrderController {
 
 		order.setOrderID(response.getOrder().getOrderID());
 		order.setSessionID(response.getOrder().getSessionID());
-		order.setuRL(response.getOrder().getuRL());
-
-		orderService.saveOrder(order);
-
+		String redirectUrl = redirectUrl(response);
+		order.setuRL(redirectUrl);
+		orderService.saveOrder(order);	
+		return new ResponseEntity<>(redirectUrl, HttpStatus.OK);
+	}
+	
+	private String redirectUrl(Response response) {
 		String url = response.getOrder().getuRL();
 		String orderId = response.getOrder().getOrderID();
 		String sessionId = response.getOrder().getSessionID();
-		String redirectUrl = url + "?ORDERID=" + orderId + "&" + "SESSIONID=" + sessionId;
-
-		return new ResponseEntity<>(redirectUrl, HttpStatus.OK);
+		return url + "?ORDERID=" + orderId + "&" + "SESSIONID=" + sessionId;
 	}
 
 	// http://localhost:8080/cancel
@@ -94,12 +105,9 @@ public class OrderController {
 	public ResponseEntity<Order> cancelOrder(@RequestParam Map<String, String> params) throws Exception {
 		String xmlmsg = params.get("xmlmsg");
 		Message response = xmlUtil.convertXmlToMessageObject(xmlmsg);
-
 		Order order = orderService.retrieveOrder(response.getOrderID());
 		order.setOrderStatus(response.getOrderStatus());
-
 		orderService.updateOrder(response.getOrderStatus(), response.getOrderID());
-
 		return new ResponseEntity<>(order, HttpStatus.OK);
 	}
 
@@ -108,12 +116,9 @@ public class OrderController {
 	public ResponseEntity<Order> approveOrder(@RequestParam Map<String, String> params) throws Exception {
 		String xmlmsg = params.get("xmlmsg");
 		Message response = xmlUtil.convertXmlToMessageObject(xmlmsg);
-
 		Order order = orderService.retrieveOrder(response.getOrderID());
 		order.setOrderStatus(response.getOrderStatus());
-
 		orderService.updateOrder(response.getOrderStatus(), response.getOrderID());
-
 		return new ResponseEntity<>(order, HttpStatus.OK);
 	}
 

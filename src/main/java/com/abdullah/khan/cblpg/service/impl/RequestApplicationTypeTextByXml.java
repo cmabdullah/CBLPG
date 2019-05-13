@@ -10,24 +10,29 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.abdullah.khan.cblpg.service.RequestService;
+import com.abdullah.khan.cblpg.util.UrlEndPoint;
 @Service
-public class RequestServiceImpl implements RequestService {
+public class RequestApplicationTypeTextByXml implements RequestService {
+	
+	@Autowired
+	UrlEndPoint urlEndPoint;
 	
 	@Override
 	public String sendXmlRequest(String objectToXml) throws Exception {
-
+		
 		//replaceFirstCharacterOfVariableNameWithCapitalLetter
 		String changeVarName = replaceFirstCharacterOfVariableNameWithCapitalLetter(objectToXml);
 		
 		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpPost httpPost = new HttpPost("http://localhost:743/exec");
+		HttpPost httpPost = new HttpPost(urlEndPoint.getURL());
 		HttpEntity stringEntity = new StringEntity(changeVarName, ContentType.TEXT_XML);
 		httpPost.setEntity(stringEntity);
 		CloseableHttpResponse response = httpclient.execute(httpPost);
-		System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
+		//System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
 		BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 		StringBuffer result = new StringBuffer();
 		String line = "";

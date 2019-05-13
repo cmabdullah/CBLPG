@@ -12,8 +12,7 @@ public class OrderService {
 	
 	private static List<Order> orders = new ArrayList<>();
 	static {
-		
-		
+		//dummy data
 		Order order1 = new Order("1", "11122333","Purchese" ,  "11122333", 20000, "bdt","Test Product" ,"http://localhost/cbp/Approved.php","http://localhost/cbp/Cancelled.php","http://localhost/cbp/Declined.php", "" ,"");
 		Order order2 = new Order("2", "11122333","Purchese" ,  "11122333", 20000, "bdt","Test Product" ,"http://localhost/cbp/Approved.php","http://localhost/cbp/Cancelled.php","http://localhost/cbp/Declined.php", "" ,"");
 		Order order3 = new Order("3", "11122333","Purchese" ,  "11122333", 20000, "bdt","Test Product" ,"http://localhost/cbp/Approved.php","http://localhost/cbp/Cancelled.php","http://localhost/cbp/Declined.php", "" ,"");
