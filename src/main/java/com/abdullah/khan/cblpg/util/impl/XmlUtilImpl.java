@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.springframework.stereotype.Service;
 
 import com.abdullah.khan.cblpg.model.Message;
-import com.abdullah.khan.cblpg.model.Request;
 import com.abdullah.khan.cblpg.model.Response;
 import com.abdullah.khan.cblpg.model.Tkkpg;
 import com.abdullah.khan.cblpg.util.XmlUtil;

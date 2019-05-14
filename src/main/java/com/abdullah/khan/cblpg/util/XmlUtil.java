@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.springframework.stereotype.Component;
 
 import com.abdullah.khan.cblpg.model.Message;
-import com.abdullah.khan.cblpg.model.Request;
 import com.abdullah.khan.cblpg.model.Response;
 import com.abdullah.khan.cblpg.model.Tkkpg;
 import com.fasterxml.jackson.core.JsonParseException;
